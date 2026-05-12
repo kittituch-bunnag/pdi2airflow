@@ -1,0 +1,19 @@
+services:
+  pdi2airflow:
+    command: ["python", "run.py", "--reload", "--no-browser", "--host", "0.0.0.0"]
+    volumes:
+      - ./backend:/app/backend
+      - ./run.py:/app/run.py
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "5173:5173"
+    environment:
+      - BACKEND_URL=http://pdi2airflow:8765
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - pdi2airflow

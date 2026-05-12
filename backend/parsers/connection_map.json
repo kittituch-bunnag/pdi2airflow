@@ -1,0 +1,37 @@
+[
+  {
+    "_comment": "Connection map: add your Airflow connection entries here.",
+    "_comment_note": "Each entry maps a PDI DB connection to an Airflow conn_id. The mapper tries entries in this order within each confidence tier. More-specific entries should come first."
+  },
+  {
+    "_comment": "Example — MSSQL production database.",
+    "_comment_note": "pdi_names: exact PDI connection name(s) for highest-confidence match. host_keywords / database_keywords: substrings matched against the PDI connection's host and database fields.",
+    "airflow_id": "mssql_prod",
+    "db_type": "MSSQL",
+    "pdi_names": ["My MSSQL Connection"],
+    "host_keywords": ["db-server"],
+    "database_keywords": ["mydb"],
+    "name_keywords": [],
+    "port": "1433"
+  },
+  {
+    "_comment": "Example — PostgreSQL data warehouse (write node).",
+    "airflow_id": "pg_datawarehouse",
+    "db_type": "POSTGRESQL",
+    "pdi_names": ["DW", "data_warehouse"],
+    "host_keywords": ["dw-server"],
+    "database_keywords": ["dwh"],
+    "name_keywords": [],
+    "port": "5432"
+  },
+  {
+    "_comment": "Example — PostgreSQL read-only replica of the same warehouse.",
+    "airflow_id": "pg_datawarehouse_ro",
+    "db_type": "POSTGRESQL",
+    "pdi_names": ["DW_readonly"],
+    "host_keywords": ["dw-replica"],
+    "database_keywords": ["dwh"],
+    "name_keywords": ["readonly", "read"],
+    "port": "5432"
+  }
+]

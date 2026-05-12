@@ -1,0 +1,20 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Config files that may contain real credentials or internal infra details
+config/kettle.properties
+config/repositories.xml
+config/connection_map.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
