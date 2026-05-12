@@ -63,11 +63,11 @@ class IngestResult:
         if len(self.standalone_ktrs) == 1:
             (path, (node, conns, vars_, unmapped)) = next(iter(self.standalone_ktrs.items()))
             graph = WorkflowGraph(
-                dag_id=f"dms_{node.id}",
+                dag_id=node.id,
                 nodes=[
                     Node(id="start_task", label="start_task", kind=NodeKind.START, position={"x": 0, "y": 0}),
                     node,
-                    Node(id="clear_xcom", label="clear_xcom", kind=NodeKind.END, position={"x": 480, "y": 0}),
+                    Node(id="end", label="end", kind=NodeKind.END, position={"x": 480, "y": 0}),
                 ],
                 edges=[],
                 connections=list(conns),
@@ -79,7 +79,7 @@ class IngestResult:
             graph.nodes[1].position = {"x": 240, "y": 0}
             graph.edges = [
                 Edge(source="start_task", target=node.id),
-                Edge(source=node.id, target="clear_xcom"),
+                Edge(source=node.id, target="end"),
             ]
             _apply_project_config(graph, self.config, source_path=path)
             _populate_missing(graph)
@@ -196,10 +196,8 @@ def _apply_project_config(graph: WorkflowGraph, config: ProjectConfig, source_pa
         if repo is not None:
             tag = _safe_tag(repo.name)
             # Prefix the dag_id with the repository tag for clearer Airflow grouping
-            if not graph.dag_id.startswith(f"dms_{tag}_"):
-                if graph.dag_id.startswith("dms_"):
-                    suffix = graph.dag_id[4:]  # strip 'dms_'
-                    graph.dag_id = f"dms_{tag}_{suffix}"
+            if not graph.dag_id.startswith(f"{tag}_"):
+                graph.dag_id = f"{tag}_{graph.dag_id}"
             # Mark the description with the repo name for the migration report
             if repo.name not in (graph.description or ""):
                 graph.description = (
