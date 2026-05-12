@@ -101,12 +101,16 @@ def _upsert_pg(df, engine, table, pkey):
     cols = list(df.columns)
     qualified = ('"%s"."%s"' % (schema, tbl)) if schema else ('"%s"' % tbl)
     upd_cols = [c for c in cols if c not in pkey]
-    set_clause = ", ".join('"%s" = EXCLUDED."%s"' % (c, c) for c in upd_cols)
     conflict_cols = ", ".join('"%s"' % c for c in pkey)
     ins_cols = ", ".join('"%s"' % c for c in cols)
+    if upd_cols:
+        set_clause = ", ".join('"%s" = EXCLUDED."%s"' % (c, c) for c in upd_cols)
+        on_conflict = "DO UPDATE SET %s" % set_clause
+    else:
+        on_conflict = "DO NOTHING"
     upsert_sql = (
-        "INSERT INTO %s (%s) VALUES %%s ON CONFLICT (%s) DO UPDATE SET %s"
-        % (qualified, ins_cols, conflict_cols, set_clause)
+        "INSERT INTO %s (%s) VALUES %%s ON CONFLICT (%s) %s"
+        % (qualified, ins_cols, conflict_cols, on_conflict)
     )
     raw = engine.raw_connection()
     try:
@@ -231,16 +235,17 @@ def _build_connection_block(conns: list[ConnectionRef]) -> str:
             f"# PDI '{c.pdi_name}' ({c.db_type}) -> Airflow '{c.suggested_airflow_conn}' "
             f"[confidence={c.confidence}]"
         )
-        var = f"CONN_{c.pdi_name.upper().replace('-', '_').replace(' ', '_')}"
+        sanitized = ''.join(ch if ch.isalnum() or ch == '_' else '_' for ch in c.pdi_name.upper()).strip('_') or 'UNNAMED'
+        var = f"CONN_{sanitized}"
         lines.append(f'{var} = "{c.suggested_airflow_conn}"{hint}')
     return "\n".join(lines)
 
 
 def _safe_sql_literal(sql: str) -> str:
-    """Render a SQL string as a safe Python literal (handles embedded single quotes)."""
+    """Render a SQL string as a safe Python literal (handles backslashes and triple quotes)."""
     if sql is None:
         return '""'
-    cleaned = sql.replace('"""', '\\"\\"\\"')
+    cleaned = sql.replace('\\', '\\\\').replace('"""', '\\"\\"\\"')
     return f'"""{cleaned}"""'
 
 
