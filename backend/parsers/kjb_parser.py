@@ -140,7 +140,7 @@ def parse_kjb_bytes(content: bytes, source_path: str = "") -> tuple[WorkflowGrap
             vref.default_value = pdefault if pdefault else _PARAM_SENTINEL
 
     graph = WorkflowGraph(
-        dag_id=_safe_id(f"dms_{job_name}"),
+        dag_id=_safe_id(job_name),
         nodes=nodes,
         edges=edges,
         connections=connections,
