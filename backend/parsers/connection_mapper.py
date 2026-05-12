@@ -1,6 +1,6 @@
 """
 Maps PDI connection definitions (.kdb / inline <connection> elements) to
-Airflow Connection IDs used in the DMS project.
+Airflow Connection IDs.
 
 Mapping rules are loaded from connection_map.json (checked-in defaults) with
 an optional override at config/connection_map.json (excluded from git).
