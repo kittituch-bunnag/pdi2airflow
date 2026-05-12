@@ -70,11 +70,11 @@ def _conn_db_type(pdi_conn_name: str, conns: list[ConnectionRef]) -> str:
 def _safe_sql_literal(sql: str) -> str:
     """
     Render a SQL string as a safe Python literal.
-    Uses triple-double-quote and escapes any embedded triple-double-quotes.
+    Uses triple-double-quote and escapes backslashes and embedded triple-double-quotes.
     """
     if sql is None:
         return '""'
-    cleaned = sql.replace('"""', '\\"\\"\\"')
+    cleaned = sql.replace('\\', '\\\\').replace('"""', '\\"\\"\\"')
     return f'"""{cleaned}"""'
 
 
