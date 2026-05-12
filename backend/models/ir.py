@@ -27,7 +27,7 @@ class NodeKind(str, Enum):
 
     # Structural
     START = "start"                # DummyOperator
-    END = "end"                    # DummyOperator (mapped to clear_xcom_dags_id at gen time)
+    END = "end"                    # DummyOperator (trigger_rule="none_failed")
     DUMMY = "dummy"                # DummyOperator (e.g. SUCCESS entries)
 
     # PDI Job entries -> tasks
