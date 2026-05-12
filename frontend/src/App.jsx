@@ -676,8 +676,6 @@ export default function App() {
             <Clock size={11} />
             Asia/Bangkok
           </div>
-          <div className="topbar-divider" />
-          <div className="topbar-meta-item">DMS conventions</div>
         </div>
       </header>
       <div className="workspace">
