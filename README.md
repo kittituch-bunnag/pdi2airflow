@@ -283,6 +283,6 @@ pdi2airflow-generic/
 │           ├── PdiNode.jsx
 │           └── TechIcon.jsx
 └── samples/
-    ├── load_customer_daily.kjb
-    └── load_customer.ktr
+    ├── sync_records_daily.kjb
+    └── sync_records.ktr
 ```

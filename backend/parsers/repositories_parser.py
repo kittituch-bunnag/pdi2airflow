@@ -14,10 +14,10 @@ For migration purposes the file gives us two important things:
    directory actually is on the developer's machine. Cross-references that
    would otherwise fail-loud as "missing file" can be resolved.
 
-2. Repository names as data-domain hints: names like 'CHMS_Daily',
-   'OFM_B2S_Online_Product_Recommend', 'E-ordering-DWH' identify the project
-   area. These flow into the generated DAG as tags and as a dag_id prefix so
-   migrated DAGs cluster naturally in the Airflow UI.
+2. Repository names as data-domain hints: names like 'etl_daily',
+   'sync_pipeline', 'warehouse_load' identify the project area. These flow
+   into the generated DAG as tags and as a dag_id prefix so migrated DAGs
+   cluster naturally in the Airflow UI.
 
 NOTE: The shipped repositories.xml has slightly malformed indentation in
 its <attribute> tags (nested <attribute> inside <attribute> rather than
@@ -67,7 +67,7 @@ class RepositoriesResult:
 
     def find_repo_for_path(self, path: str) -> FileRepository | None:
         """
-        Given a path like 'E:/eorder/eorder_dwh/load_x.ktr', return the
+        Given a path like 'E:/my_project/my_pipeline/load_x.ktr', return the
         FileRepository whose base_directory is the longest matching prefix.
         Used by the orchestrator to resolve cross-references.
         """

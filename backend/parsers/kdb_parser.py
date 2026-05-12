@@ -5,11 +5,11 @@ PDI's .kdb is a small XML file describing one connection. Schematic example:
 
     <?xml version="1.0" encoding="UTF-8"?>
     <connection>
-      <name>ofm_erp_mssql</name>
+      <name>source_mssql</name>
       <server>10.0.0.5</server>
       <type>MSSQL</type>
       <access>Native</access>
-      <database>dbofm_erp</database>
+      <database>my_source_db</database>
       <port>1433</port>
       <username>${db.user}</username>
       <password>Encrypted ...</password>

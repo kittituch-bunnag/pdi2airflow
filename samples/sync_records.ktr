@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>load_customer</name>
-    <description>Read customer master from MSSQL and write to PG staging</description>
+    <name>sync_records</name>
+    <description>Read records from MSSQL source and write to PostgreSQL target</description>
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
@@ -17,45 +17,45 @@
   </info>
   <notepads/>
   <connection>
-    <name>ofm_erp_mssql</name>
+    <name>source_mssql</name>
     <server>192.0.2.5</server>
     <type>MSSQL</type>
     <access>Native</access>
-    <database>source_erp</database>
+    <database>source_db</database>
     <port>1433</port>
     <username>${db.user}</username>
     <password>Encrypted xxx</password>
   </connection>
   <connection>
-    <name>target_dwh_pg</name>
+    <name>target_pg</name>
     <server>192.0.2.7</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>target_dwh</database>
+    <database>target_db</database>
     <port>5432</port>
     <username>${db.user}</username>
     <password>Encrypted xxx</password>
   </connection>
   <order>
     <hop>
-      <from>read_customer</from>
+      <from>read_source</from>
       <to>select_columns</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
       <from>select_columns</from>
-      <to>write_staging</to>
+      <to>write_target</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
-    <name>read_customer</name>
+    <name>read_source</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
-    <connection>ofm_erp_mssql</connection>
-    <sql>SELECT customer_id, customer_name, created_at FROM dbo.customer_master WHERE created_at &gt;= '${run_date}'</sql>
+    <connection>source_mssql</connection>
+    <sql>SELECT record_id, record_name, created_at FROM dbo.source_table WHERE created_at &gt;= '${run_date}'</sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -76,13 +76,13 @@
     <copies>1</copies>
     <fields>
       <field>
-        <name>customer_id</name>
-        <rename>cust_id</rename>
+        <name>record_id</name>
+        <rename>rec_id</rename>
         <type>Integer</type>
       </field>
       <field>
-        <name>customer_name</name>
-        <rename>cust_name</rename>
+        <name>record_name</name>
+        <rename>rec_name</rename>
         <type>String</type>
       </field>
       <field>
@@ -99,14 +99,14 @@
     </GUI>
   </step>
   <step>
-    <name>write_staging</name>
+    <name>write_target</name>
     <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
-    <connection>target_dwh_pg</connection>
-    <schema>staging</schema>
-    <table>customer_master</table>
+    <connection>target_pg</connection>
+    <schema>target</schema>
+    <table>records</table>
     <commit>1000</commit>
     <truncate>N</truncate>
     <ignore_errors>N</ignore_errors>

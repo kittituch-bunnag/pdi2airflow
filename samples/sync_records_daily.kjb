@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <job>
-  <name>load_customer_daily</name>
-  <description>Daily load of customer master from ERP to DWH</description>
+  <name>sync_records_daily</name>
+  <description>Daily sync of records from source DB to target DB</description>
   <extended_description/>
   <job_version/>
   <job_status>0</job_status>
@@ -18,21 +18,21 @@
     </parameter>
   </parameters>
   <connection>
-    <name>ofm_erp_mssql</name>
+    <name>source_mssql</name>
     <server>192.0.2.5</server>
     <type>MSSQL</type>
     <access>Native</access>
-    <database>source_erp</database>
+    <database>source_db</database>
     <port>1433</port>
     <username>${db.user}</username>
     <password>Encrypted xxx</password>
   </connection>
   <connection>
-    <name>target_dwh_pg</name>
+    <name>target_pg</name>
     <server>192.0.2.7</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>target_dwh</database>
+    <database>target_db</database>
     <port>5432</port>
     <username>${db.user}</username>
     <password>Encrypted xxx</password>
@@ -59,11 +59,11 @@
       <yloc>50</yloc>
     </entry>
     <entry>
-      <name>truncate_staging</name>
+      <name>truncate_target</name>
       <description/>
       <type>SQL</type>
-      <connection>target_dwh_pg</connection>
-      <sql>TRUNCATE TABLE staging.customer_master;</sql>
+      <connection>target_pg</connection>
+      <sql>TRUNCATE TABLE target.records;</sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
       <sqlfilename/>
@@ -75,10 +75,10 @@
       <yloc>50</yloc>
     </entry>
     <entry>
-      <name>load_customer</name>
+      <name>sync_records</name>
       <description/>
       <type>TRANS</type>
-      <filename>${Internal.Job.Filename.Directory}/load_customer.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}/sync_records.ktr</filename>
       <transname/>
       <directory>/</directory>
       <arg_from_previous>N</arg_from_previous>
@@ -125,7 +125,7 @@
   <hops>
     <hop>
       <from>START</from>
-      <to>truncate_staging</to>
+      <to>truncate_target</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -133,8 +133,8 @@
       <unconditional>Y</unconditional>
     </hop>
     <hop>
-      <from>truncate_staging</from>
-      <to>load_customer</to>
+      <from>truncate_target</from>
+      <to>sync_records</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -142,7 +142,7 @@
       <unconditional>N</unconditional>
     </hop>
     <hop>
-      <from>load_customer</from>
+      <from>sync_records</from>
       <to>SUCCESS</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
